@@ -1,33 +1,30 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const mysql = require('mysql');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 require('dotenv').config()
-
+const User = require('./models/User')
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 var rateLimit = [];
+const connectDB = async () => {
+    try{
+        await mongoose.connect("mongodb+srv://rayen123:rayen123@testnode.ou1rn.mongodb.net/TestNode?retryWrites=true&w=majority", {
+            useNewUrlParser: true,
+        });
+        console.log("mongodb connected");
 
-const connection = mysql.createConnection({
-    host: '127.0.0.1',
-
-    user: 'root',
-    password: '',
-    database: 'rayen' 
-  
-
-});
-
-
-connection.connect(function (err) {
-    if (!err) {
-        console.log("Database is connected ...");
-    } else {
-        console.log(err);
     }
-});
+    catch (err) {
+        console.log(err.message);
+        process.exit(1);
+
+    }
+}
+
+connectDB();
 
 app.get('/api', (req, res) => {
     res.json({
@@ -127,39 +124,28 @@ app.post('/api/justify', verifyToken, (req, res) => {
 
 });
 
-app.post('/api/token', (req, res) => {
-    var sql = 'SELECT 1 FROM `user` WHERE email = ' + mysql.escape(req.body.email);
-
-    function checkEmail(callback) {
-        connection.query(sql, function (error, results, fields) {
-            if (error) {
-                console.log(error);
-                callback();
-            } else {
-                callback(results.length);
-            }
-        });
-    }
-
-    checkEmail(function (authorized) {
-        if (!authorized) {
-            res.json({ message: 'Email not found.' });
-            return;
+app.post('/api/token',async function (req, res) {
+    const email = req.body.email;
+    console.log("aaa",email)
+    var userr =  await User.findOne({ 'email' :email});
+        
+    console.log("aaa",{userr})
+    const user = {
+            email: req.body.email
         }
-
-        const user = {
-            email: req.query.email
-        }
-
+if(userr){
+    console.log(userr.email)
         jwt.sign({ user }, 'secretkey', { expiresIn: '24h' }, (err, token) => {
             rateLimit[token] = { words: 0, date: new Date() };
             //console.log(rateLimit[token]);
             res.json({
                 token
             });
-        });
+        });} else{
+            res.json({msg:"user not exist"})
+        }
     });
-});
+
 
 
 // FORMAT OF TOKEN
