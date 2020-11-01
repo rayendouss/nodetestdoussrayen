@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 
-var PORT=5000 || process.env.PORT;
+var PORT=process.env.PORT || 5000;
 var rateLimit = [];
 const connectDB = async () => {
     try{
