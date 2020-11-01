@@ -8,6 +8,8 @@ const User = require('./models/User')
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
+
+var PORT=5000 || process.env.PORT;
 var rateLimit = [];
 const connectDB = async () => {
     try{
@@ -207,4 +209,4 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-app.listen(5000 || process.env.PORT, () => console.log('Server started on port 5000'));
+app.listen(PORT, () => console.log('Server started on port 5000'));
