@@ -15,6 +15,7 @@ const connectDB = async () => {
     try{
         await mongoose.connect("mongodb+srv://rayen123:rayen123@testnode.ou1rn.mongodb.net/TestNode?retryWrites=true&w=majority", {
             useNewUrlParser: true,
+             useUnifiedTopology: true 
         });
         console.log("mongodb connected");
 
